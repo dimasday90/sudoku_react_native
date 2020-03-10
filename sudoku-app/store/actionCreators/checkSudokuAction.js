@@ -18,21 +18,18 @@ export default function checkSudoku(payload) {
       .map(key => key + "=" + `%5B${encodeBoard(params[key])}%5D`)
       .join("&");
   return function(dispatch) {
-    console.log(payload);
     dispatch(setLoading(true));
+    dispatch(setMessage(""));
     axios
       .post(
         "https://sugoku.herokuapp.com/validate",
-        // { board: payload }
         encodeParams({ board: payload }),
         { "Content-Type": "application/x-www-form-urlencoded" }
       )
       .then(({ data }) => {
-        console.log(data);
         dispatch(setMessage(data.status));
       })
       .catch(err => {
-        console.log(err);
         dispatch(setMessage(err));
       })
       .finally(() => {

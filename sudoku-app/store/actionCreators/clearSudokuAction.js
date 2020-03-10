@@ -2,7 +2,7 @@ import axios from "axios";
 import setSudoku from "./setSudokuAction";
 import setLoading from "./setLoadingAction";
 
-export default function randomSudoku() {
+export default function clearSudoku() {
   return function(dispatch) {
     dispatch(setLoading(true));
     axios

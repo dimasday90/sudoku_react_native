@@ -5,7 +5,8 @@ import {
   View,
   Button,
   Modal,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from "react-native";
 import { TapGestureHandler, State } from "react-native-gesture-handler";
 import { useSelector, useDispatch } from "react-redux";
@@ -15,14 +16,16 @@ import checkSudoku from "../store/actionCreators/checkSudokuAction";
 import autoSolveSudoku from "../store/actionCreators/autoSolveSudokuAction";
 
 export default function App() {
+  const initialSudokuBoard = useSelector(
+    state => state.initialSudoku.initialSudokuBoard
+  );
+  const sudokuBoard = useSelector(state => state.sudoku.sudokuBoard);
+  const message = useSelector(state => state.message.message);
+  const loading = useSelector(state => state.loading.loading);
   const [dialog, setDialog] = useState(false);
   const [indexRow, setIndexRow] = useState(null);
   const [indexCol, setIndexCol] = useState(null);
   const dispatch = useDispatch();
-  const initialSudokuBoard = useSelector(
-    state => state.sudoku.initialSudokuBoard
-  );
-  const sudokuBoard = useSelector(state => state.sudoku.sudokuBoard);
 
   const openValueChangeDialog = (event, indexRow, indexCol) => {
     if (event.nativeEvent.state === State.ACTIVE) {
@@ -46,26 +49,96 @@ export default function App() {
 
   const applySudokuValidate = () => {
     dispatch(checkSudoku(sudokuBoard));
+    if (message) {
+      Alert.alert(
+        `Sudoku ${message}`,
+        "",
+        [
+          {
+            text: "Ok",
+            style: "cancel"
+          }
+        ],
+        { cancelable: false }
+      );
+    }
   };
 
   const solveSudoku = () => {
-    dispatch(autoSolveSudoku(sudokuBoard));
+    Alert.alert(
+      "Solve Sudoku",
+      "Are you sure to solve your sudoku?\n(Your access button will be disable and any changes will not be occured after auto solve)",
+      [
+        {
+          text: "No",
+          style: "cancel"
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            dispatch(autoSolveSudoku(initialSudokuBoard));
+            if (message === "solved") {
+              Alert.alert(
+                "Sudoku Solved Automatically",
+                "You can try solving sudoku on your own again next time. For now, you can see the solved sudoku and back to home to try again.",
+                [
+                  {
+                    text: "Ok",
+                    style: "cancel"
+                  }
+                ],
+                { cancelable: false }
+              );
+            }
+          }
+        }
+      ],
+      { cancelable: false }
+    );
   };
 
   const resetBoard = () => {
-    console.log(initialSudokuBoard);
-    dispatch(setSudoku(initialSudokuBoard));
+    Alert.alert(
+      "Reset Sudoku",
+      "Are you sure to reset your sudoku back to original sudoku state?",
+      [
+        {
+          text: "No",
+          style: "cancel"
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            dispatch(setSudoku(initialSudokuBoard));
+          }
+        }
+      ],
+      { cancelable: false }
+    );
   };
 
   useEffect(() => {
     dispatch(fetchSudoku());
-  }, [dispatch]);
+  }, []);
 
+  if (loading)
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
   return (
     <View>
-      <View>
-        <Text>Tap the box twice to change the number</Text>
-      </View>
+      {message !== "solved" && (
+        <View>
+          <Text>Tap the box twice to change the number</Text>
+        </View>
+      )}
+      {message === "solved" && (
+        <View>
+          <Text>This sudoku has been solved</Text>
+        </View>
+      )}
       <View>
         {sudokuBoard.map((row, indexRow) => (
           <View
@@ -85,6 +158,7 @@ export default function App() {
               >
                 <TapGestureHandler
                   numberOfTaps={2}
+                  enabled={message === "solved" ? false : true}
                   onHandlerStateChange={event =>
                     openValueChangeDialog(event, indexRow, indexCol)
                   }
@@ -111,7 +185,7 @@ export default function App() {
           </View>
         </Modal>
       </View>
-      {!dialog && (
+      {!dialog && message !== "solved" && (
         <View
           style={{
             marginTop: 9,

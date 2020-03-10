@@ -1,10 +1,14 @@
 import { createStore, applyMiddleware, combineReducers, compose } from "redux";
 import thunk from "redux-thunk";
+import loading from "./reducers/loading";
+import initialSudoku from "./reducers/initialSudoku";
 import sudoku from "./reducers/sudoku";
 import message from "./reducers/message";
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const allReducer = combineReducers({
+  loading,
+  initialSudoku,
   sudoku,
   message
 });
