@@ -1,8 +1,9 @@
 import axios from "axios";
 import setMessage from "./setMessageAction";
+import setSudoku from "./setSudokuAction";
 import setLoading from "./setLoadingAction";
 
-export default function checkSudoku(payload) {
+export default function autoSolveSudoku(payload) {
   const encodeBoard = board =>
     board.reduce(
       (result, row, i) =>
@@ -18,21 +19,18 @@ export default function checkSudoku(payload) {
       .map(key => key + "=" + `%5B${encodeBoard(params[key])}%5D`)
       .join("&");
   return function(dispatch) {
-    console.log(payload);
     dispatch(setLoading(true));
     axios
       .post(
-        "https://sugoku.herokuapp.com/validate",
-        // { board: payload }
+        "https://sugoku.herokuapp.com/solve",
         encodeParams({ board: payload }),
         { "Content-Type": "application/x-www-form-urlencoded" }
       )
       .then(({ data }) => {
-        console.log(data);
+        dispatch(setSudoku(data.solution));
         dispatch(setMessage(data.status));
       })
       .catch(err => {
-        console.log(err);
         dispatch(setMessage(err));
       })
       .finally(() => {

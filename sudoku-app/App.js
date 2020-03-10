@@ -1,25 +1,24 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import SudokuBoard from "./components/SudokuBoard";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import SudokuGamePage from "./views/SudokuGamePage";
 import { Provider } from "react-redux";
 import store from "./store";
+import HomePage from "./views/HomePage";
 
-export default function App() {
+const Stack = createStackNavigator();
+
+function App() {
   return (
     <Provider store={store}>
-      <View style={styles.container}>
-        <Text>SudokuBoard</Text>
-        <SudokuBoard />
-      </View>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen name="Home" component={HomePage} />
+          <Stack.Screen name="Sudoku" component={SudokuGamePage} />
+        </Stack.Navigator>
+      </NavigationContainer>
     </Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
-  }
-});
+export default App;
