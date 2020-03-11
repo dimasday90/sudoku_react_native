@@ -4,12 +4,12 @@ import setInitialSudoku from "./setInitialSudokuAction";
 import setLoading from "./setLoadingAction";
 import setMessage from "./setMessageAction";
 
-export default function fetchSudoku() {
+export default function fetchSudoku(level) {
   return function(dispatch) {
     dispatch(setLoading(true));
     dispatch(setMessage(""));
     axios
-      .get("https://sugoku.herokuapp.com/board?difficulty=random")
+      .get(`https://sugoku.herokuapp.com/board?difficulty=${level}`)
       .then(({ data }) => {
         const initSudoku = [];
         data.board.forEach(arr => {

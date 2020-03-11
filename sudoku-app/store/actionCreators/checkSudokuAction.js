@@ -20,20 +20,10 @@ export default function checkSudoku(payload) {
   return function(dispatch) {
     dispatch(setLoading(true));
     dispatch(setMessage(""));
-    axios
-      .post(
-        "https://sugoku.herokuapp.com/validate",
-        encodeParams({ board: payload }),
-        { "Content-Type": "application/x-www-form-urlencoded" }
-      )
-      .then(({ data }) => {
-        dispatch(setMessage(data.status));
-      })
-      .catch(err => {
-        dispatch(setMessage(err));
-      })
-      .finally(() => {
-        dispatch(setLoading(false));
-      });
+    return axios.post(
+      "https://sugoku.herokuapp.com/validate",
+      encodeParams({ board: payload }),
+      { "Content-Type": "application/x-www-form-urlencoded" }
+    );
   };
 }
