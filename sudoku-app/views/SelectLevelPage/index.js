@@ -46,7 +46,7 @@ export default function SelectLevel({ navigation }) {
               playWithDifficulty(
                 "random",
                 "blue",
-                Math.floor(Math.random() * 120)
+                Math.floor(Math.random() * (120 - 30) + 30)
               )
             }
           />
